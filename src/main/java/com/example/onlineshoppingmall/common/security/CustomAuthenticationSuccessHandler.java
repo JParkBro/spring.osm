@@ -1,4 +1,4 @@
-package com.example.onlineshoppingmall.config;
+package com.example.onlineshoppingmall.common.security;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;

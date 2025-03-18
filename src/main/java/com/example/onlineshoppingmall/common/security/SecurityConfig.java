@@ -1,4 +1,4 @@
-package com.example.onlineshoppingmall.config;
+package com.example.onlineshoppingmall.common.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

@@ -1,4 +1,4 @@
-package com.example.onlineshoppingmall.service;
+package com.example.onlineshoppingmall.common.security;
 
 import com.example.onlineshoppingmall.domain.UserEntity;
 import com.example.onlineshoppingmall.mapper.AuthMapper;

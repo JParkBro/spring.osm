@@ -1,5 +1,6 @@
-package com.example.onlineshoppingmall.config;
+package com.example.onlineshoppingmall.common.config;
 
+import com.example.onlineshoppingmall.config.CategoryInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

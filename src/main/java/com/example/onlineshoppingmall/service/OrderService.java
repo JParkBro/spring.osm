@@ -9,8 +9,8 @@ import com.example.onlineshoppingmall.dto.OrdersDTO;
 import com.example.onlineshoppingmall.dto.ProductInfoDTO;
 import com.example.onlineshoppingmall.mapper.CartItemMapper;
 import com.example.onlineshoppingmall.mapper.OrderMapper;
-import com.example.onlineshoppingmall.util.CodeUtils;
-import com.example.onlineshoppingmall.util.OrderIdGenerator;
+import com.example.onlineshoppingmall.common.util.CodeUtils;
+import com.example.onlineshoppingmall.common.util.OrderIdGenerator;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;

@@ -1,4 +1,4 @@
-package com.example.onlineshoppingmall.util;
+package com.example.onlineshoppingmall.common.util;
 
 import com.example.onlineshoppingmall.domain.Code;
 import com.example.onlineshoppingmall.mapper.CodeMapper;

@@ -1,5 +1,6 @@
 package com.example.onlineshoppingmall.controller;
 
+import com.example.onlineshoppingmall.common.exception.AccessDeniedException;
 import com.example.onlineshoppingmall.domain.OrderEntity;
 import com.example.onlineshoppingmall.domain.SearchPages;
 import com.example.onlineshoppingmall.domain.UserEntity;
@@ -65,8 +66,7 @@ public class UserPageController {
         OrderEntity order = orderService.getOrder(orderId);
 
         if (!order.getUserId().equals(authentication.getName())) {
-            redirectAttributes.addFlashAttribute("alertMessage", "접근 권한이 없는 주문입니다.");
-            return "redirect:/";
+            throw new AccessDeniedException("해당 주문에 대한 접근 권한이 없습니다.");
         }
 
         model.addAttribute("order", order);

@@ -1,4 +1,4 @@
-package com.example.onlineshoppingmall.util;
+package com.example.onlineshoppingmall.common.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
