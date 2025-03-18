@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.onlineshoppingmall.mapper.CartItemMapper">
+
+    <insert id="insertCartItem" parameterType="AddCartDTO">
+        INSERT INTO CART_ITEMS (
+                user_id
+              , product_id
+              , quantity
+              , created_user
+        ) VALUES (
+                #{userId}
+              , #{productId}
+              , #{quantity}
+              , #{userId}
+        )
+    </insert>
+
+    <select id="findCartItemByUserIdAndProductId" parameterType="AddCartDTO" resultType="CartItemEntity">
+        SELECT *
+          FROM CART_ITEMS
+         WHERE user_id = #{userId}
+           AND product_id = #{productId}
+           AND use_yn = 'Y'
+    </select>
+
+    <update id="updateCartItemQuantity">
+        UPDATE CART_ITEMS
+           SET quantity = #{quantity}
+         WHERE id = #{id}
+    </update>
+
+    <select id="findCartItemsByUserId" parameterType="String" resultType="CartItemEntity">
+        SELECT id
+             , product_id
+             , quantity
+          FROM CART_ITEMS
+         WHERE user_id = #{userId}
+           AND use_yn = 'Y'
+    </select>
+
+    <select id="findProductInfoByProductId" parameterType="Long" resultType="ProductInfoDTO">
+        SELECT *
+          FROM PRODUCTS
+         WHERE id = #{productId}
+           AND use_yn = 'Y'
+    </select>
+
+    <select id="findProductImageByProductId" parameterType="Long" resultType="ProductImageDTO">
+        SELECT *
+          FROM IMAGES
+         WHERE reference_id = #{productId}
+           AND reference_type = 'PRODUCT'
+           AND use_yn = 'Y'
+         ORDER BY display_order
+         LIMIT 1
+    </select>
+
+    <update id="deleteCartItem" parameterType="Long">
+        UPDATE CART_ITEMS
+           SET use_yn = 'N'
+         WHERE id = #{id}
+    </update>
+
+    <select id="findCartItemById" parameterType="Long" resultType="CartItemEntity">
+        SELECT id
+             , product_id
+             , quantity
+          FROM CART_ITEMS
+         WHERE id = #{id}
+           AND use_yn = 'Y'
+    </select>
+
+    <select id="countCartItemsByUserId" parameterType="String" resultType="Integer">
+        SELECT count(*)
+          FROM CART_ITEMS
+         WHERE user_id = #{userId}
+           AND use_yn = 'Y'
+    </select>
+
+</mapper>

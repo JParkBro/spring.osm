@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.onlineshoppingmall.mapper.AdminCategoryMapper">
+
+    <select id="getAllCategories" resultType="CategoryEntity">
+        SELECT *
+          FROM PRODUCT_CATEGORIES
+         WHERE use_yn = 'Y'
+      ORDER BY id
+    </select>
+
+    <insert id="insertCategory" parameterType="CategoryEntity">
+        INSERT INTO PRODUCT_CATEGORIES (
+                    code_id,
+                    name,
+                    parent_id,
+                    created_user
+        ) VALUES (
+                    #{codeId},
+                    #{name},
+                    #{parentId},
+                    #{createdUser}
+        )
+        <selectKey resultType="Long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <select id="getCategoryById" parameterType="Long" resultType="CategoryEntity">
+        SELECT *
+          FROM PRODUCT_CATEGORIES
+         WHERE id = #{id}
+           AND use_yn = 'Y'
+    </select>
+
+    <update id="deleteCategory" parameterType="CategoryEntity">
+        UPDATE PRODUCT_CATEGORIES
+        SET use_yn = 'N'
+        WHERE id = #{id}
+           OR id IN (
+            SELECT id FROM PRODUCT_CATEGORIES
+            WHERE parent_id = #{id} AND use_yn = 'Y'
+        )
+           OR id IN (
+            SELECT pc.id FROM PRODUCT_CATEGORIES pc
+                                  JOIN PRODUCT_CATEGORIES parent ON pc.parent_id = parent.id
+            WHERE parent.parent_id = #{id} AND pc.use_yn = 'Y'
+        )
+    </update>
+
+    <update id="updateCategory" parameterType="CategoryEntity">
+        UPDATE PRODUCT_CATEGORIES
+           SET name = #{name}
+         WHERE id = #{id}
+    </update>
+
+    <select id="findCategoriesByIds" parameterType="java.util.List" resultType="CategoryEntity">
+        SELECT id, name, parent_id AS parentId, code_id AS codeId, use_yn, created_at, updated_at
+        FROM PRODUCT_CATEGORIES
+        WHERE id IN
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        AND use_yn = 'Y'
+    </select>
+
+    <select id="findCategoryById" parameterType="Long" resultType="CategoryEntity">
+        SELECT *
+          FROM PRODUCT_CATEGORIES
+         WHERE id = #{id}
+           AND use_yn = 'Y'
+    </select>
+</mapper>

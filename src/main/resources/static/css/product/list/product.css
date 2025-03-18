@@ -1,0 +1,17 @@
+.product-container {
+    width: 1280px;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    letter-spacing: -.5px;
+    margin-bottom: 20px;
+
+    .left-panel-section {
+        width: 265px;
+        flex-shrink: 0;
+    }
+
+    .right-panel-section {
+        flex-grow: 1;
+    }
+}

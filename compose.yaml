@@ -1,0 +1,73 @@
+services:
+  init-volume:
+    image: busybox
+    volumes:
+      - product_images:/tmp/files
+    command: sh -c "mkdir -p /app/files/product && chmod -R 777 /app/files && echo 'Volume initialized'"
+    user: root
+
+  app:
+    build: .
+    container_name: product-app
+    ports:
+      - "8080:8081"
+    depends_on:
+      - init-volume
+      - mysql-db
+      - redis
+    volumes:
+      - product_images:/tmp/files
+    user: root
+    environment:
+      - SERVER_PORT=8081
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://mysql-db:3306/${MYSQL_DB}
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
+    restart: unless-stopped
+
+  mysql-db:
+    image: mariadb:10.6.4-focal
+    container_name: product-mariadb
+    command: '--default-authentication-plugin=mysql_native_password'
+    restart: always
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DB}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:latest
+    container_name: product-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mysql-data: {}
+  redis-data: {}
+  product_images:
+
+
+# 명령어
+# docker-compose up (실행)
+# docker-compose down (종료)
+# docker-compose ps (목록 확인)

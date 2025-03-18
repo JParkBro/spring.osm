@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{pages/admin/layout}">
+<head>
+  <meta charset="UTF-8">
+  <title>상품 상세 정보</title>
+  <style>
+    .product-detail-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .product-detail-table th {
+      width: 120px;
+      text-align: left;
+      padding: 15px 10px;
+      vertical-align: top;
+      background-color: #f8f9fa;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .product-detail-table td {
+      padding: 15px 10px;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .product-detail-table input[type="text"],
+    .product-detail-table input[type="number"],
+    .product-detail-table select,
+    .product-detail-table textarea {
+      width: 100%;
+      padding: 8px;
+      border: none;
+      background-color: transparent;
+      font-size: 14px;
+      color: #333;
+      cursor: default;
+      resize: none;
+    }
+
+    .product-detail-table textarea {
+      height: 150px;
+      line-height: 1.5;
+    }
+
+    .category-path {
+      display: flex;
+      align-items: center;
+    }
+
+    .category-path span {
+      margin: 0 8px;
+      color: #6c757d;
+    }
+
+    .image-gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 10px;
+    }
+
+    .image-item {
+      width: 150px;
+      height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .image-item img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 30px;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 8px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background-color 0.2s;
+    }
+
+    .btn-primary {
+      background-color: #1a73e8;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #1557b0;
+    }
+
+    .btn-danger {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background-color: #c82333;
+    }
+
+    .btn-secondary {
+      background-color: #5f6368;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background-color: #494c50;
+    }
+
+    .product-info-label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .product-info {
+      color: #333;
+    }
+
+    .product-price {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a73e8;
+    }
+
+    .product-stock {
+      font-weight: 500;
+      color: #28a745;
+    }
+
+    .product-stock.low {
+      color: #dc3545;
+    }
+  </style>
+</head>
+
+<body>
+<div layout:fragment="content">
+  <h2>상품 상세 정보</h2>
+
+  <div class="product-detail-container">
+    <table class="product-detail-table">
+      <tr>
+        <th>상품명</th>
+        <td>
+          <div class="product-info" th:text="${product.name}">상품명</div>
+        </td>
+      </tr>
+      <tr>
+        <th>가격</th>
+        <td>
+          <div class="product-price" th:text="${#numbers.formatInteger(product.price, 0, 'COMMA') + '원'}">0원</div>
+        </td>
+      </tr>
+      <tr>
+        <th>재고수량</th>
+        <td>
+          <div class="product-stock" th:classappend="${product.stockQuantity < 10 ? 'low' : ''}"
+               th:text="${product.stockQuantity + '개'}">0개</div>
+        </td>
+      </tr>
+      <tr>
+        <th>카테고리</th>
+        <td>
+          <div class="category-path">
+            <div th:text="${product.largeCategory != null ? product.largeCategory.name : ''}">대분류</div>
+            <span>></span>
+            <div th:text="${product.mediumCategory != null ? product.mediumCategory.name : ''}">중분류</div>
+            <span>></span>
+            <div th:text="${product.smallCategory != null ? product.smallCategory.name : ''}">소분류</div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th>이미지</th>
+        <td>
+          <div class="image-gallery">
+            <div th:each="image : ${product.images}" class="image-item">
+              <img th:src="@{${image.imageUri}}" alt="상품 이미지">
+            </div>
+            <div th:if="${#lists.isEmpty(product.images)}" class="no-image">
+              <p>등록된 이미지가 없습니다.</p>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th>설명</th>
+        <td>
+          <div class="product-description" th:text="${product.description}">상품 설명</div>
+        </td>
+      </tr>
+    </table>
+
+    <div class="action-buttons">
+      <a th:href="@{/admin/products/update/{id}(id=${product.id})}" class="btn btn-primary">수정</a>
+      <button type="button" id="deleteButton" class="btn btn-danger" th:data-product-id="${product.id}">삭제</button>
+      <a th:href="@{/admin/products/list(page=${session.currentPage})}" class="btn btn-secondary">목록</a>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      // 삭제 버튼 클릭 이벤트 등록
+      $('.btn-danger').click(function() {
+        if (confirm('정말로 이 상품을 삭제하시겠습니까?')) {
+          const productId = $('#deleteButton').data('product-id');
+          console.log(productId)
+
+          $.ajax({
+            url: `/api/v1/admin/products/delete`,
+            type: 'PATCH',
+            contentType: 'application/json',
+            data: JSON.stringify({ productId: productId }),
+            success: function(response) {
+              alert('상품이 성공적으로 삭제되었습니다.');
+              window.location.href = '/admin/products/list';
+            },
+            error: function(xhr, status, error) {
+              alert('상품 삭제 중 오류가 발생했습니다: ' + error);
+            }
+          });
+        }
+      });
+    });
+  </script>
+</div>
+</body>
+</html>

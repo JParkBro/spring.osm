@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en"
+      th:fragment="productSummaryFragment">
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+	<link rel="stylesheet" th:href="@{/css/product/detail/fragments/productSummary.css}">
+</head>
+<body>
+    <div class="product-summary-container">
+	    <input type="hidden" id="product-id" th:value="${product.id}">
+	    <input type="hidden" id="product-price" th:value="${product.price}">
+	    <input type="hidden" id="stock-quantity" th:value="${product.stockQuantity}">
+	    <input type="hidden" id="is-logged-in" th:value="${#authorization.expression('isAuthenticated()')}">
+	    <section class="product-image-section">
+            <div class="image-container">
+                <div class="display-image-wrapper">
+	                <div class="arrow-container">
+		                <div class="click-area-left"></div>
+		                <div class="click-area-right"></div>
+		                <img th:src="@{/images/chevron_left.png}" alt="Chevron Left" class="chevron-left">
+		                <img th:src="@{/images/chevron_right.png}" alt="Chevron Right" class="chevron-right">
+	                </div>
+	                <img th:src="@{/images/product_test_img.jpg}" alt="Product Image" class="display-image">
+                </div>
+                <div class="image-list-wrapper">
+	                <ul class="image-list">
+		                <li th:class="image-item"
+		                    th:each="image : ${product.images}"
+		                    th:attr="data-image-id=${image.id}">
+			                <div th:class="selected-border"></div>
+			                <img th:src="@{${image.imageUri}}" alt="Product Image" th:class="list-item-image">
+		                </li>
+	                </ul>
+                </div>
+            </div>
+        </section>
+        <section class="product-info-section">
+	        <div class="info-container">
+		        <div class="product-name">
+			        <span th:text="${product.name}">NAME</span>
+		        </div>
+		        <div class="product-description">
+			        <span th:text="${product.description}">NAME</span>
+		        </div>
+		        <div class="product-price">
+			        <span th:text="${#numbers.formatInteger(product.price, 0, 'COMMA') + '원'}">98,000원</span>
+		        </div>
+		        <hr class="margin-bottom-zero">
+		        <ul class="selected-products-container">
+			        <li class="selected-product-item">
+				        <div class="product-quantity-and-price">
+					        <div class="product-price">
+						        <div class="price-won">
+							        <span class="price">수량선택</span>
+						        </div>
+					        </div>
+					        <div class="product-quantity">
+						        <div class="quantity-minus-button quantity-btn no-select">-</div>
+						        <div class="quantity no-select">0</div>
+						        <div class="quantity-plus-button quantity-btn no-select">+</div>
+					        </div>
+				        </div>
+			        </li>
+		        </ul>
+		        <hr th:class="margin-top-zero">
+		        <div class="product-shipping">
+			        <div class="shipping-paid">
+				        <span class="method">택배배송</span>
+				        <span class="divider">⎮</span>
+				        <span class="paid">2,500원</span>
+				        <span class="free">무료배송</span>
+			        </div>
+			        <div class="shipping-free-conditional">
+				        <span>50,000원 이상 주문시 무료배송</span>
+			        </div>
+		        </div>
+		        <hr>
+		        <div class="order-summary-container">
+			        <div class="order-total-price-container">
+				        <div class="total-amount-container">
+					        <span class="total-amount">총 상품 금액</span>
+				        </div>
+				        <div class="total-quantity-container">
+					        <span class="total-price">0</span>
+					        <span class="won">원</span>
+				        </div>
+			        </div>
+			        <div class="order-buttons-container">
+				        <div class="add-to-cart-button">
+					        <img th:src="@{/images/shopping_bag.png}" alt="Shopping Bag" class="shopping-bag-icon">
+					        <span class="cart-text">장바구니</span>
+				        </div>
+				        <div class="purchase-button">
+					        <span class="purchase-text">구매하기</span>
+				        </div>
+			        </div>
+		        </div>
+	        </div>
+        </section>
+    </div>
+</body>
+<script>
+    $(document).ready(function() {
+        const $minusButton = $('.quantity-minus-button');
+        const $plusButton = $('.quantity-plus-button');
+        const $quantityElement = $('.quantity');
+        const $imageItems = $('.image-item');
+        const $displayImage = $('.display-image');
+        const $chevronLeft = $('.chevron-left');
+        const $chevronRight = $('.chevron-right');
+        const $displayImageWrapper = $('.display-image-wrapper');
+        const $totalPriceElement = $('.total-price');
+
+
+        $displayImageWrapper.append('<div class="click-area-left"></div><div class="click-area-right"></div>');
+        const $clickAreaLeft = $('.click-area-left');
+        const $clickAreaRight = $('.click-area-right');
+
+        let currentQuantity = 0;
+        let productPrice = 0;
+        let currentIndex = 0;
+
+        function initialize() {
+            setupEventListeners();
+
+            if ($imageItems.length > 0) {
+                selectImage(0);
+            }
+        }
+
+        function setupEventListeners() {
+            $imageItems.on('click', function() {
+                selectImage($(this).index());
+            });
+
+            $chevronLeft.on('click', function(e) {
+                e.stopPropagation();
+                navigateImage(-1);
+            });
+
+            $chevronRight.on('click', function(e) {
+                e.stopPropagation();
+                navigateImage(1);
+            });
+
+            setupClickAreaEvents();
+        }
+
+        function setupClickAreaEvents() {
+            setupHoverEvents($clickAreaLeft, $chevronLeft);
+            setupHoverEvents($clickAreaRight, $chevronRight);
+
+            $clickAreaLeft.on('click', function() {
+                navigateImage(-1);
+            });
+
+            $clickAreaRight.on('click', function() {
+                navigateImage(1);
+            });
+        }
+
+        function setupHoverEvents(clickArea, chevron) {
+            clickArea.on('mouseenter', function() {
+                $chevronLeft.show();
+                $chevronRight.show();
+            }).on('mouseleave', function() {
+                if (!$('.arrow-container').is(':hover')) {
+                    $chevronLeft.hide();
+                    $chevronRight.hide();
+                }
+            });
+        }
+
+        function selectImage(index) {
+            $imageItems.find('.selected-border').removeClass('selected');
+            $imageItems.eq(index).find('.selected-border').addClass('selected');
+
+            const imageUrl = $imageItems.eq(index).find('img').attr('src');
+            $displayImage.attr('src', imageUrl);
+            currentIndex = index;
+        }
+
+        function navigateImage(direction) {
+            const totalImages = $imageItems.length;
+            const newIndex = (currentIndex + direction + totalImages) % totalImages;
+            selectImage(newIndex);
+        }
+
+        initialize();
+
+        function initializeQuantityControl() {
+            productPrice = parseInt($('#product-price').val(), 10);
+
+            updateQuantity(0);
+            updateButtons();
+        }
+
+        function updateQuantity(newQuantity) {
+            const stockQuantity = parseInt($('#stock-quantity').val(), 10);
+
+            if (newQuantity < 0) {
+                newQuantity = 0;
+            } else if (newQuantity > stockQuantity) {
+                newQuantity = stockQuantity;
+            }
+
+            currentQuantity = newQuantity;
+
+            $quantityElement.text(currentQuantity);
+
+            const totalPrice = currentQuantity * productPrice;
+            $totalPriceElement.text(totalPrice.toLocaleString());
+
+            updateButtons();
+        }
+
+        function updateButtons() {
+            const stockQuantity = parseInt($('#stock-quantity').val(), 10);
+
+            if (currentQuantity <= 0) {
+                $minusButton.addClass('disabled');
+            } else {
+                $minusButton.removeClass('disabled');
+            }
+
+            if (currentQuantity >= stockQuantity) {
+                $plusButton.addClass('disabled');
+            } else {
+                $plusButton.removeClass('disabled');
+            }
+        }
+
+        $minusButton.on('click', function() {
+            if (currentQuantity > 0) {
+                updateQuantity(currentQuantity - 1);
+            }
+        });
+
+        $plusButton.on('click', function() {
+            const stockQuantity = parseInt($('#stock-quantity').val(), 10);
+            if (currentQuantity < stockQuantity) {
+                updateQuantity(currentQuantity + 1);
+            }
+        });
+
+        initializeQuantityControl();
+
+        const isLoggedIn = $("#is-logged-in").val() === "true"
+        const $productId = $("#product-id").val()
+        $(".add-to-cart-button").on("click", function() {
+	        if (!isLoggedIn) {
+                alert("로그인을 해주세요")
+                window.location.href = '/auth/login?redirect=' + encodeURIComponent(window.location.href);
+                return false;
+	        } else {
+                if (!currentQuantity > 0) {
+                    alert("상품 개수를 추가해주세요.")
+                } else {
+                    const confirmMessage = `장바구니에 담겠습니까? (선택한 수량: ${currentQuantity}개)`
+                    if (confirm(confirmMessage)) {
+                        const data = {
+                            productId: $productId,
+                            quantity: currentQuantity,
+                        }
+                        $.ajax({
+	                        url: "/api/v1/product/cart/insert",
+                            type: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify(data),
+	                        success: function (response) {
+                                if (response && response.success) {
+                                    if (confirm("장바구니에 상품이 추가되었습니다. 장바구니로 이동하시겠습니까?")) {
+                                        window.location.href = "/user/cart";
+                                    }
+                                    updateCartItemCount()
+                                } else {
+                                    alert(response.message || "장바구니 추가 중 오류가 발생했습니다.");
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                alert("장바구니 추가 중 오류가 발생했습니다.");
+                                console.error("Error:", error);
+                            }
+                        })
+                    } else {
+                        // 사용자가 '취소'를 클릭한 경우
+                        console.log("장바구니 추가 취소됨");
+                    }
+                }
+	        }
+        })
+
+	    $('.purchase-button').on('click', function () {
+            if (!isLoggedIn) {
+                alert("로그인을 해주세요")
+                window.location.href = '/auth/login?redirect=' + encodeURIComponent(window.location.href);
+                return false;
+            } else {
+                if (!currentQuantity > 0) {
+                    alert("상품 개수를 추가해주세요.")
+                } else {
+	                if (confirm('상품을 구매하시겠습니까?')) {
+                        $('<form>')
+                            .attr('method', 'POST')
+                            .attr('action', '/user/order/direct')
+                            .append($('<input>').attr({
+                                type: 'hidden',
+                                name: 'productId',
+                                value: $productId
+                            }))
+                            .append($('<input>').attr({
+                                type: 'hidden',
+                                name: 'quantity',
+                                value: currentQuantity
+                            }))
+                            .appendTo('body')
+                            .submit();
+	                }
+                }
+            }
+	    })
+    });
+</script>
+</html>

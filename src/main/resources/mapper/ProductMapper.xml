@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.onlineshoppingmall.mapper.ProductMapper">
+
+    <select id="getProducts" parameterType="Long" resultType="ProductEntity">
+        SELECT *
+          FROM PRODUCTS p
+          LEFT JOIN PRODUCT_CATEGORY_MAPPING pcm on p.id = pcm.product_id
+         WHERE pcm.category_id = #{categoryId}
+           AND p.use_yn = 'Y'
+    </select>
+
+    <select id="getProductImageDTO" parameterType="Long" resultType="ProductImageDTO">
+        SELECT *
+          FROM IMAGES
+         WHERE reference_id = #{productId}
+           AND reference_type = 'PRODUCT'
+           AND use_yn = 'Y'
+         ORDER BY display_order
+         LIMIT 1
+    </select>
+
+    <select id="getProduct" parameterType="Long" resultType="ProductEntity">
+        SELECT *
+          FROM PRODUCTS
+         WHERE id = #{productId}
+           AND use_yn = 'Y'
+    </select>
+    
+    <select id="getProductImages" parameterType="Long" resultType="ProductImageDTO">
+        SELECT *
+          FROM IMAGES
+         WHERE reference_id = #{productId}
+           AND reference_type = 'PRODUCT'
+           AND use_yn = 'Y'
+         ORDER BY display_order
+    </select>
+
+</mapper>

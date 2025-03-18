@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" th:fragment="leftPanelFragment">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" th:href="@{/css/product/list/fragments/leftPanel.css}">
+</head>
+<body>
+    <div class="left-panel-container">
+        <section class="category-section">
+            <div class="sub-category">
+                <strong th:each="category : ${categories}"
+                        th:if="${hierarchies.level2 == category.id}"
+                        th:text="${category.name}">상의</strong>
+            </div>
+            <ul class="detail-category-tree">
+                <li class="detail-category-node"
+                    th:each="category : ${categories}"
+                    th:if="${hierarchies.level2 == category.parentId}">
+                    <a th:href="@{/product/{id}(id=${category.id})}">
+                        <span th:text="${category.name}">Category Name</span>
+                    </a>
+                </li>
+            </ul>
+        </section>
+        <section class="filter-section">
+            <div class="sub-category">
+                <span>FILTER</span>
+            </div>
+            <div class="detail-category">
+                <span>FILTER</span>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

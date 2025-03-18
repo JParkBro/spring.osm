@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" th:fragment="HeaderFragment">
+<head>
+    <meta charset="UTF-8">
+
+    <link rel="stylesheet" th:href="@{/css/fragments/header.css}">
+
+    <script th:src="@{/js/common/header.js}" defer></script>
+</head>
+    <div class="header-container">
+        <div class="header">
+            <div class="header-auth">
+                <a th:href="@{/auth/login}" th:if="${#httpServletRequest.remoteUser == null}" >
+                    <span class="menu-label">로그인</span>
+                </a>
+                <a th:href="@{/auth/register}" th:if="${#httpServletRequest.remoteUser == null}" class="register">
+                    <span class="menu-label">회원가입</span>
+                </a>
+                <a th:href="@{/logout}" th:if="${#httpServletRequest.remoteUser != null}">
+                    <span class="menu-label">로그아웃</span>
+                </a>
+            </div>
+            <div class="header-main">
+                <div class="logo">
+                    <img th:src="@{/images/logo.png}" th:onclick="|window.location.href='/'|" alt="OSM Logo">
+                </div>
+                <div class="search">
+                    <form th:action="@{/search}" method="get" class="search-form">
+                        <label class="search-label">
+                            <input type="text" class="search-input" placeholder="Search..."/>
+                        </label>
+                        <button type="submit" class="search-button">
+                            <img th:src="@{/images/search.svg}" alt="Search Icon">
+                        </button>
+                    </form>
+                </div>
+                <div class="menu">
+                    <div class="menu-item category">
+                        <img th:src="@{/images/category.png}" alt="Category Icon" class="menu-icon">
+                        <span class="menu-label">카테고리</span>
+                        <div class="menu-sub" data-categories='[[${categories}]]'>
+                            <img th:src="@{/images/dropdown_top.svg}" alt="Dropdown Top Image" class="dropdown-top-image">
+                            <div class="category-container">
+                                <ul class="category-level1">
+                                    <li class="category-node" th:each="category : ${categories}" th:if="${category.codeId == 4}" th:attr="data-id=${category.id}, data-level=1">
+                                        <span th:text="${category.name}">Category Name</span>
+                                        <img th:src="@{/images/chevron_right.png}" alt="Chevron Icon" class="chevron-icon">
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="category-container">
+                                <ul class="category-level2">
+                                    <li class="category-node" th:each="category : ${categories}" th:if="${category.codeId == 5}" th:attr="data-parent-id=${category.parentId}, data-id=${category.id}, data-level=2">
+                                        <span th:text="${category.name}">Category Name</span>
+                                        <img th:src="@{/images/chevron_right.png}" alt="Chevron Icon" class="chevron-icon">
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="category-container">
+                                <ul class="category-level3">
+                                    <li class="category-node" th:each="category : ${categories}" th:if="${category.codeId == 6}" th:attr="data-parent-id=${category.parentId}, data-id=${category.id}, data-level=3">
+                                        <span th:text="${category.name}">Category Name</span>
+                                        <img th:src="@{/images/chevron_right.png}" alt="Chevron Icon" class="chevron-icon">
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="menu-item cart">
+                        <a th:href="@{/user/cart}">
+                            <div class="cart-icon-container">
+                                <img th:src="@{/images/shopping_cart.png}" alt="Cart Icon" class="menu-icon">
+                                <span class="cart-badge" th:if="${cartItemCount != null && cartItemCount > 0}" th:text="${cartItemCount}">0</span>
+                            </div>
+                            <span class="menu-label">장바구니</span>
+                        </a>
+                    </div>
+                    <div class="menu-item my-page">
+                        <a th:href="@{/user/mypage/orders}" >
+                            <img th:src="@{/images/person.png}" alt="Person Icon" class="menu-icon">
+                            <span class="menu-label">마이페이지</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</html>

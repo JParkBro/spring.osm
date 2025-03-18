@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.onlineshoppingmall.mapper.AdminProductMapper">
+
+    <!-- 상품 목록 조회 (페이지네이션 포함) -->
+    <select id="findProductsWithPagination" parameterType="map" resultType="ProductResponseDTO">
+        SELECT p.id
+             , p.name
+             , p.price
+             , p.stock_quantity
+             , pcm.category_id
+          FROM PRODUCTS p
+          LEFT JOIN (SELECT product_id
+                          , category_id
+                          , ROW_NUMBER() over (PARTITION BY product_id ORDER BY id) AS rn
+                       FROM PRODUCT_CATEGORY_MAPPING
+                      WHERE use_yn = 'Y'
+                ) pcm ON p.id = pcm.product_id AND pcm.rn = 1
+         WHERE use_yn = 'Y'
+        ORDER BY p.id DESC
+        <if test="page != null and size != null">
+            LIMIT #{size} OFFSET #{offset}
+        </if>
+        <if test="page == null or size == null">
+            LIMIT 10 OFFSET 0
+        </if>
+    </select>
+
+    <!-- 검색 조건에 맞는 상품 수 조회 -->
+    <select id="totalCount" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+          FROM PRODUCTS
+         WHERE use_yn = 'Y'
+    </select>
+
+    <insert id="insertProduct" parameterType="ProductEntity">
+        INSERT INTO PRODUCTS (
+                name
+              , description
+              , price
+              , stock_quantity
+              , created_user
+        ) VALUES (
+                #{name}
+              , #{description}
+              , #{price}
+              , #{stockQuantity}
+              , #{createdUser}
+        )
+        <selectKey resultType="Long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <insert id="insertProductMapping" parameterType="ProductCategoryMappingEntity">
+        INSERT INTO PRODUCT_CATEGORY_MAPPING (
+                    product_id
+                  , category_id
+                  , created_user
+        ) VALUES (
+                    #{productId}
+                  , #{categoryId}
+                  , #{createdUser}
+        )
+    </insert>
+    
+    <insert id="insertImages" parameterType="ImageEntity">
+        INSERT INTO IMAGES (
+                    reference_id
+                  , reference_type
+                  , image_uri
+                  , display_order
+                  , created_user
+        ) VALUES (
+                    #{referenceId}
+                  , #{referenceType}
+                  , #{imageUri}
+                  , #{displayOrder}
+                  , #{createdUser}
+        )
+    </insert>
+    
+    <select id="getProductById" parameterType="Long" resultType="ProductEntity">
+        SELECT *
+          FROM PRODUCTS
+         WHERE id = #{id}
+           AND use_yn = 'Y'
+    </select>
+
+    <select id="findCategoryIdByProductId" parameterType="Long" resultType="Long">
+        SELECT category_id
+          FROM PRODUCT_CATEGORY_MAPPING
+         WHERE product_id = #{productId}
+           AND use_yn = 'Y'
+    </select>
+
+    <select id="findByReferenceIdAndReferenceTypeOrderByDisplayOrder" resultType="ImageEntity">
+        SELECT *
+          FROM IMAGES
+         WHERE reference_id = #{productId}
+           AND reference_type = #{referenceType}
+           AND use_yn = 'Y'
+      ORDER BY display_order
+    </select>
+
+    <select id="getProductImagesForDelete" parameterType="Long" resultType="Map">
+        SELECT id
+             , image_uri
+          FROM IMAGES
+         WHERE reference_id = #{productId}
+    </select>
+
+    <update id="deleteProduct" parameterType="Long">
+        UPDATE PRODUCTS
+           SET use_yn = 'N'
+         WHERE id = #{productId}
+    </update>
+
+    <update id="deleteProductImages" parameterType="Long">
+        UPDATE IMAGES
+           SET use_yn = 'N'
+         WHERE reference_id = #{productId}
+    </update>
+
+    <update id="updateProduct" parameterType="ProductEntity">
+        UPDATE PRODUCTS
+           SET name              = #{name}
+             , description       = #{description}
+             , price             = #{price}
+             , stock_quantity    = #{stockQuantity}
+             , updated_user      = #{updatedUser}
+             , updated_at        = NOW()
+         WHERE id = #{id}
+    </update>
+
+    <update id="updateProductMapping" parameterType="ProductCategoryMappingEntity">
+        UPDATE PRODUCT_CATEGORY_MAPPING
+           SET category_id      = #{categoryId}
+             , updated_user     = #{updatedUser}
+             , updated_at       = NOW()
+         WHERE product_id = #{productId}
+    </update>
+
+    <update id="deleteImage" parameterType="Long">
+        UPDATE IMAGES
+           SET use_yn = 'N'
+         WHERE id = #{imageId}
+    </update>
+
+    <select id="getMaxImageOrder" parameterType="Long" resultType="Integer">
+        SELECT MAX(display_order)
+          FROM IMAGES
+         WHERE reference_id = #{productId}
+    </select>
+
+</mapper>

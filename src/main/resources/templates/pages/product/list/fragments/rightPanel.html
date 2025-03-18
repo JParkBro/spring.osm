@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" th:fragment="rightPanelFragment">
+<head>
+    <meta charset="UTF-8">
+    <title>Header</title>
+
+    <link rel="stylesheet" th:href="@{/css/product/list/fragments/rightPanel.css}">
+    <script th:src="@{/js/product/list/fragments/rightPanel.js}" defer></script>
+</head>
+<body>
+    <div class="right-panel-container">
+        <section class="category-section">
+            <ul class="category-tree">
+                <li class="category-node active">
+                    <a th:href="@{/}" class="category_item">
+                        <div class="border-box">
+                            <span>홈</span>
+                        </div>
+                    </a>
+                </li>
+                <li class="category-node active"
+                    th:each="category : ${categories}"
+                    th:if="${hierarchies.level1 eq category.id}">
+                    <img th:src="@{/images/chevron_right.png}" alt="Chevron Right" class="chevron_right">
+                    <a class="category_item">
+                        <div class="border-box">
+                            <span th:text="${category.name}">남성의류</span>
+                            <img th:src="@{/images/keyboard_arrow_down.png}" alt="Arrow Down" class="arrow_down">
+                        </div>
+                        <div class="category-list-level1 category-list-container">
+                            <ul class="category-list">
+                                <li th:each="category : ${categories}" th:if="${category.codeId eq 4}" class="list-item">
+                                    <span th:text="${category.name}" th:class="${hierarchies.level1 eq category.id} ? 'active' : ''"></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </a>
+                </li>
+                <li class="category-node active"
+                    th:each="category : ${categories}"
+                    th:if="${hierarchies.level2 eq category.id}">
+                    <img th:src="@{/images/chevron_right.png}" alt="Chevron Right" class="chevron_right">
+                    <a class="category_item">
+                        <div class="border-box">
+                            <span th:text="${category.name}">상의</span>
+                            <img th:src="@{/images/keyboard_arrow_down.png}" alt="Arrow Down" class="arrow_down">
+                        </div>
+                        <div class="category-list-level2 category-list-container">
+                            <ul class="category-list">
+                                <li th:each="category : ${categories}" th:if="${category.codeId eq 5 and hierarchies.level1 eq category.parentId}" class="list-item">
+                                    <span th:text="${category.name}" th:class="${hierarchies.level2 eq category.id} ? 'active' : ''"></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </a>
+                </li>
+                <li class="category-node de-active"
+                    th:each="category : ${categories}"
+                    th:if="${hierarchies.level3 eq category.id}">
+                    <img th:src="@{/images/chevron_right.png}" alt="Chevron Right" class="chevron_right">
+                    <div class="category_item">
+                        <div class="border-box">
+                            <span th:text="${category.name}">니트/스웨터</span>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </section>
+        <section class="product-section">
+            <div class="composite-card-list">
+                <ul class="product-list">
+                    <li class="composite-product-item"
+                        th:each="product : ${products}"
+                        th:attr="data-product-id=${product.id}">
+                        <div class="product-item-container">
+                            <a th:href="@{/product/detail/{id}(id=${product.id})}" class="product-item-content">
+                                <div class="img-container">
+                                    <img th:src="@{${product.thumbnail.imageUri}}" alt="Product Image" class="product-image">
+                                </div>
+                                <div class="product-information">
+                                    <div class="product-brand">
+                                        <span th:text="${product.name}">HDEX</span>
+                                        <img th:src="@{/images/chevron_right.png}" alt="chevron_right" class="chevron_right">
+                                    </div>
+                                    <div class="product-name">
+                                        <span th:text="${product.description}">Package 새해다짐 Package 새해다짐 Package 새해다짐</span>
+                                    </div>
+                                    <div class="product-price">
+                                        <div th:if="${product.stockQuantity > 0}">
+                                            <div class="price" th:text="${#numbers.formatInteger(product.price, 0, 'COMMA') + '원'}">98,000원</div>
+                                            <div class="shipping free" th:if="${product.price >= 50000}">무료배송</div>
+                                            <div class="shipping paid" th:unless="${product.price >= 50000}">배송비 2,500원</div>
+                                        </div>
+                                        <div th:unless="${product.stockQuantity > 0}" class="sold-out-container">
+                                            <div class="sold-out">품절</div>
+                                        </div>
+                                    </div>
+                                    <div class="product-rating">
+                                        <span class="rating"><img th:src="@{/images/rating_star_red.png}" alt="Rating Star Red" class="rating-star-red"/>4.72</span>
+                                        <span class="reviews">∙ 리뷰 988</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.onlineshoppingmall.mapper.CategoryMapper">
+
+    <select id="findAll" resultType="CategoryEntity">
+        SELECT *
+          FROM PRODUCT_CATEGORIES
+         WHERE use_yn = 'Y'
+    </select>
+
+    <select id="findById" parameterType="Long" resultType="CategoryEntity">
+        SELECT *
+          FROM PRODUCT_CATEGORIES
+         WHERE id = #{categoryId}
+           AND use_yn = 'Y'
+    </select>
+
+</mapper>

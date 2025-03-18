@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.onlineshoppingmall.mapper.OrderMapper">
+
+    <insert id="insertOrder" parameterType="OrderEntity">
+        INSERT INTO ORDERS (
+                order_id
+              , user_id
+              , code_id
+              , order_date
+              , total_product_price
+              , shipping_cost
+              , recipient_name
+              , phone
+              , postal_code
+              , address
+              , detail_address
+              , delivery_request
+              , created_user
+        ) VALUES (
+                #{orderId}
+              , #{userId}
+              , #{codeId}
+              , #{orderDate}
+              , #{totalProductPrice}
+              , #{shippingCost}
+              , #{recipientName}
+              , #{phone}
+              , #{postalCode}
+              , #{address}
+              , #{detailAddress}
+              , #{deliveryRequest}
+              , 'ADMIN'
+        )
+    </insert>
+
+    <insert id="insertOrderItem" parameterType="OrderItemsEntity">
+        INSERT INTO ORDER_ITEMS (
+                  order_id
+                , product_id
+                , product_price
+                , quantity
+                , created_user
+        ) VALUES (
+                  #{orderId}
+                , #{productId}
+                , #{productPrice}
+                , #{quantity}
+                , 'ADMIN'
+        )
+    </insert>
+
+    <select id="findOrdersByUserId" parameterType="map" resultType="OrderEntity">
+        SELECT *
+          FROM ORDERS
+         WHERE user_id = #{params.userId}
+           AND use_yn = 'Y'
+         ORDER BY order_date DESC
+        <if test="page != null and size != null">
+            LIMIT #{size} OFFSET #{offset}
+        </if>
+        <if test="page == null or size == null">
+            LIMIT 5 OFFSET 0
+        </if>
+    </select>
+
+    <select id="totalCount" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+          FROM ORDERS
+         WHERE user_id = #{params.userId}
+           AND use_yn = 'Y'
+    </select>
+
+    <select id="findOrderByOrderId" parameterType="String" resultType="OrderEntity">
+        SELECT order_id
+             , user_id
+             , code_id
+             , order_date
+             , total_product_price
+             , shipping_cost
+             , recipient_name
+             , phone
+             , postal_code
+             , address
+             , detail_address
+             , delivery_request
+          FROM ORDERS
+         WHERE order_id = #{orderId}
+           AND use_yn = 'Y'
+    </select>
+
+    <select id="findOrderItemsByOrderId" parameterType="String" resultType="OrderItemsEntity">
+        SELECT *
+          FROM ORDER_ITEMS
+         WHERE order_id = #{orderId}
+           AND use_yn = 'Y'
+         ORDER BY id
+    </select>
+
+</mapper>

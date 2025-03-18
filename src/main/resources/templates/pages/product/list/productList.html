@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layouts/defaultLayout}"
+      layout:fragment="Content">
+<head>
+    <meta charset="UTF-8">
+    <title>PRODUCT PAGE</title>
+
+    <link rel="stylesheet" th:href="@{/css/product/list/product.css}">
+</head>
+<body>
+    <div class="product-container">
+        <section class="left-panel-section">
+            <div th:replace="~{pages/product/list/fragments/leftPanel :: leftPanelFragment}"></div>
+        </section>
+        <section class="right-panel-section">
+            <div th:replace="~{pages/product/list/fragments/rightPanel :: rightPanelFragment}"></div>
+        </section>
+    </div>
+</body>
+</html>

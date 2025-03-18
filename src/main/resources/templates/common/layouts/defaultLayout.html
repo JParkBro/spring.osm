@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head th:replace="~{common/fragments/config :: ConfigFragment}">
+    <meta charset="UTF-8">
+    <title>Default Layout</title>
+</head>
+<body>
+    <!-- 공통 헤더 -->
+    <header th:replace="~{common/fragments/header :: HeaderFragment}"></header>
+
+    <!-- 개별 페이지 콘텐츠가 삽입될 부분 -->
+    <div class="content-container">
+        <div class="content">
+            <th:block layout:fragment="Content"></th:block>
+        </div>
+    </div>
+
+    <!-- 공통 푸터 -->
+    <footer th:replace="~{common/fragments/footer :: FooterFragment}"></footer>
+</body>
+</html>

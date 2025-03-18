@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{pages/admin/layout}">
+<head>
+	<meta charset="UTF-8">
+  <title>상품 관리</title>
+  <th:block layout:fragment="css">
+    <style>
+      h1.page-title {
+        margin-bottom: 10px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      /* 테이블 셀 가운데 정렬 */
+      table td {
+        text-align: center; /* 모든 셀 가운데 정렬 */
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+        vertical-align: middle;
+      }
+
+      /* 테이블 헤더 가운데 정렬 */
+      table th {
+        text-align: center;
+        padding: 12px 10px;
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+      }
+
+      /* 페이지네이션과 버튼 레이아웃 조정 */
+      .pagination-actions-container {
+        display: flex;
+        flex-direction: row; /* 수평 배치로 변경 */
+        justify-content: space-between; /* 양쪽 정렬 */
+        align-items: center;
+        margin: 20px 0;
+        width: 100%;
+        position: relative;
+      }
+
+      /* 페이지네이션 컨테이너 */
+      .pagination-container {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+      }
+
+      /* 페이지네이션 목록 */
+      .pagination {
+        display: flex;
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* 페이지네이션 항목 */
+      .pagination li {
+        display: inline-block;
+        margin: 0 2px;
+      }
+
+      /* 페이지네이션 링크 스타일 */
+      .pagination li a,
+      .pagination li span {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-width: 36px;
+        height: 36px;
+        padding: 0 10px;
+        color: #333;
+        text-decoration: none;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: all 0.2s ease;
+      }
+
+      /* 현재 페이지 스타일 */
+      .pagination li.active span {
+        background-color: #333333;
+        color: #fff;
+        border-color: #333333;
+        font-weight: bold;
+      }
+
+      /* 마우스 오버 효과 */
+      .pagination li a:hover {
+        background-color: #f4f4f4;
+        border-color: #bbb;
+      }
+
+      /* 비활성화된 링크 스타일 */
+      .pagination li .disabled-link {
+        color: #aaa;
+        background-color: #f8f8f8;
+        cursor: not-allowed;
+      }
+
+      /* 상품 등록 버튼 컨테이너 */
+      .action-buttons {
+        position: absolute;
+        right: 0;
+        top: 0;
+      }
+
+      /* 상품 등록 버튼 */
+      .btn-create {
+        display: inline-block;
+        padding: 8px 16px;
+        background-color: #4CAF50;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: 500;
+        transition: background-color 0.2s;
+      }
+
+      .btn-create:hover {
+        background-color: #45a049;
+        color: white;
+      }
+
+      .product-row {
+        cursor: pointer;
+      }
+      .product-row:hover {
+        background-color: #f5f5f5;
+      }
+    </style>
+  </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+  <h1 class="page-title">상품 관리</h1>
+
+  <!-- 카테고리 목록 테이블 -->
+  <div class="card">
+    <table>
+      <colgroup>
+        <col width="15%">
+        <col width="15%">
+        <col width="15%">
+        <col width="25%">
+        <col width="20%">
+        <col width="10%">
+      </colgroup>
+      <thead>
+      <tr>
+        <th>대분류</th>
+        <th>중분류</th>
+        <th>소분류</th>
+        <th>상품명</th>
+        <th>상품가격</th>
+        <th>재고량</th>
+      </tr>
+      </thead>
+      <tbody>
+      <!-- 상품 목록 -->
+      <tr th:each="product : ${products}" th:data-id="${product.id}" th:class="product-row">
+        <td th:text="${product.largeCategory.name ?: '-'}">대분류</td>
+        <td th:text="${product.mediumCategory.name ?: '-'}">중분류</td>
+        <td th:text="${product.smallCategory.name ?: '-'}">소분류</td>
+        <td th:text="${product.name}">상품명</td>
+        <td th:text="${#numbers.formatInteger(product.price, 0, 'COMMA') + '원'}">10,000원</td>
+        <td th:text="${product.stockQuantity}">100</td>
+      </tr>
+
+      <!-- 데이터가 없을 경우 표시 -->
+      <tr th:if="${#lists.isEmpty(products)}">
+        <td colspan="6" style="text-align: center;">등록된 상품이 없습니다.</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination-actions-container">
+    <!-- 페이지네이션 컨테이너 -->
+    <div class="pagination-container">
+      <ul class="pagination" th:if="${!#lists.isEmpty(products)}"
+          th:with="startUnit=${((currentPage - 1)/5)*5+1}, endUnit=${startUnit+4 < totalPages ? startUnit + 4 : totalPages}">
+        <li>
+          <a th:if="${currentPage > 1}" th:href="@{/admin/products/list(page=1)}">&lt;&lt;</a>
+          <span th:unless="${currentPage > 1}" class="disabled-link">&lt;&lt;</span>
+        </li>
+        <li>
+          <a th:if="${currentPage > 1}" th:href="@{/admin/products/list(page=${currentPage <= 5 ? 1 : ((currentPage - 1)/5)*5})}">&lt;</a>
+          <span th:unless="${currentPage > 1}" class="disabled-link">&lt;</span>
+        </li>
+        <li th:each="page : ${#numbers.sequence(startUnit, endUnit)}"
+            th:class="${page == currentPage ? 'active' : ''}">
+          <a th:if="${page != currentPage}"
+             th:href="@{/admin/products/list(page=${page})}"
+             th:text="${page}">1</a>
+          <span th:if="${page == currentPage}" th:text="${page}">1</span>
+        </li>
+        <li th:with="nextUnit=${endUnit + 1 > totalPages ? totalPages : endUnit + 1}">
+          <a th:if="${currentPage < totalPages}" th:href="@{/admin/products/list(page=${nextUnit})}">&gt;</a>
+          <span th:unless="${currentPage < totalPages}" class="disabled-link">&gt;</span>
+        </li>
+        <li>
+          <a th:if="${currentPage < totalPages}" th:href="@{/admin/products/list(page=${totalPages})}">&gt;&gt;</a>
+          <span th:unless="${currentPage < totalPages}" class="disabled-link">&gt;&gt;</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- 상품 등록 버튼 -->
+    <div class="action-buttons">
+      <a th:href="@{/admin/products/create}" class="btn-create">상품 등록</a>
+    </div>
+  </div>
+  <script>
+    $(document).ready(function() {
+      $('.product-row').on("click", function () {
+        const productId = $(this).data('id');
+        window.location.href = '/admin/products/detail/' + productId;
+      })
+    });
+  </script>
+</div>
+</body>
+</html>

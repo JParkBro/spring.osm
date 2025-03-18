@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layouts/defaultLayout}"
+      layout:fragment="Content">
+<head>
+    <meta charset="UTF-8">
+    <title>Online Shopping Mall</title>
+    <style>
+        /* 전체 레이아웃 */
+        .container {
+            width: 1200px;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* 배너 슬라이더 스타일 */
+        .banner-section {
+            margin: 20px 0 40px 0;
+        }
+        .banner-container {
+            position: relative;
+            overflow: hidden;
+            height: 400px;
+            width: 100%;
+        }
+        .banner-slide {
+            width: 100%;
+            height: 400px;
+            background-size: cover;
+            background-position: center;
+        }
+        .banner-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+        .banner-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            margin: 0 5px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+        }
+        .banner-dot.active {
+            background-color: #fff;
+        }
+
+        /* 상품 섹션 스타일 */
+        .product-section {
+            margin-bottom: 50px;
+        }
+        .section-title {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #333;
+            font-size: 24px;
+        }
+        .product-grid {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -10px;
+        }
+        .product-item {
+            width: 25%;
+            padding: 0 10px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+        .product-card {
+            border: 1px solid #ddd;
+            background-color: #fff;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .product-img-container {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
+        .product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .product-info {
+            padding: 15px;
+        }
+        .product-title {
+            font-weight: bold;
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            height: 40px;
+            overflow: hidden;
+        }
+        .product-price {
+            font-size: 18px;
+            color: #e74c3c;
+            margin: 0;
+        }
+
+        /* 빈 상품 메시지 */
+        .empty-message {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+            font-size: 16px;
+        }
+
+        /* 반응형 처리 */
+        @media (max-width: 1024px) {
+            .product-item {
+                width: 33.333%;
+            }
+        }
+        @media (max-width: 768px) {
+            .product-item {
+                width: 50%;
+            }
+            .banner-container {
+                height: 300px;
+            }
+            .banner-slide {
+                height: 300px;
+            }
+        }
+        @media (max-width: 480px) {
+            .product-item {
+                width: 100%;
+            }
+            .banner-container {
+                height: 200px;
+            }
+            .banner-slide {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- 배너 슬라이더 섹션 -->
+<section class="banner-section">
+    <div class="banner-container">
+        <div class="banner-wrapper">
+            <div class="banner-slide" style="background-image: url('/images/banner1.jpeg')"></div>
+            <div class="banner-slide" style="background-image: url('/images/banner2.jpeg'); display: none;"></div>
+            <div class="banner-slide" style="background-image: url('/images/banner3.jpeg'); display: none;"></div>
+        </div>
+        <div class="banner-controls">
+            <span class="banner-dot active" data-index="0"></span>
+            <span class="banner-dot" data-index="1"></span>
+            <span class="banner-dot" data-index="2"></span>
+        </div>
+    </div>
+</section>
+
+<div class="container">
+    <!-- 신규 상품 섹션 -->
+    <section class="product-section">
+        <h1 class="section-title">신규 상품</h1>
+        <div class="product-grid" th:if="${not #lists.isEmpty(newProducts)}">
+            <div class="product-item" th:each="product : ${newProducts}">
+                <div class="product-card" th:onclick="'location.href=\'/product/detail/' + ${product.id} + '\''">
+                    <div class="product-img-container">
+                        <img class="product-img" th:src="${product.thumbnail != null ? product.thumbnail.filePath : '/images/no-image.jpg'}" alt="상품 이미지">
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title" th:text="${product.name}">상품명</h3>
+                        <p class="product-price" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + '원'}">가격</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="empty-message" th:if="${#lists.isEmpty(newProducts)}">
+            신규 상품이 없습니다.
+        </div>
+    </section>
+
+    <!-- 인기 상품 섹션 -->
+    <section class="product-section">
+        <h1 class="section-title">인기 상품</h1>
+        <div class="product-grid" th:if="${not #lists.isEmpty(popularProducts)}">
+            <div class="product-item" th:each="product : ${popularProducts}">
+                <div class="product-card" th:onclick="'location.href=\'/product/detail/' + ${product.id} + '\''">
+                    <div class="product-img-container">
+                        <img class="product-img" th:src="${product.thumbnail != null ? product.thumbnail.filePath : '/images/no-image.jpg'}" alt="상품 이미지">
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title" th:text="${product.name}">상품명</h3>
+                        <p class="product-price" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + '원'}">가격</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="empty-message" th:if="${#lists.isEmpty(popularProducts)}">
+            인기 상품이 없습니다.
+        </div>
+    </section>
+</div>
+</body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script th:if="${not #strings.isEmpty(alertMessage)}">
+    alert("[(${alertMessage})]");
+</script>
+<script>
+    $(document).ready(function() {
+        // 배너 슬라이더 기능
+        let currentBanner = 0;
+        const bannerCount = $('.banner-slide').length;
+        let autoSlideInterval;
+        let isAnimating = false; // 애니메이션 진행 중인지 확인하는 플래그
+
+        // 자동 슬라이드 기능
+        function startAutoSlide() {
+            autoSlideInterval = setInterval(function() {
+                if (!isAnimating) {
+                    nextBanner();
+                }
+            }, 4000);
+        }
+
+        // 자동 슬라이드 시작
+        startAutoSlide();
+
+        // 다음 배너로 이동
+        function nextBanner() {
+            if (isAnimating) return; // 이미 애니메이션 중이면 실행 안 함
+
+            isAnimating = true;
+            $('.banner-slide').eq(currentBanner).fadeOut(300, function() {
+                currentBanner = (currentBanner + 1) % bannerCount;
+                $('.banner-slide').eq(currentBanner).fadeIn(300, function() {
+                    isAnimating = false; // 애니메이션 완료
+                });
+                updateDots();
+            });
+        }
+
+        // 이전 배너로 이동
+        function prevBanner() {
+            if (isAnimating) return; // 이미 애니메이션 중이면 실행 안 함
+
+            isAnimating = true;
+            $('.banner-slide').eq(currentBanner).fadeOut(300, function() {
+                currentBanner = (currentBanner - 1 + bannerCount) % bannerCount;
+                $('.banner-slide').eq(currentBanner).fadeIn(300, function() {
+                    isAnimating = false; // 애니메이션 완료
+                });
+                updateDots();
+            });
+        }
+
+        // 닷 업데이트
+        function updateDots() {
+            $('.banner-dot').removeClass('active');
+            $('.banner-dot[data-index="' + currentBanner + '"]').addClass('active');
+        }
+
+        // 닷 클릭 이벤트
+        $('.banner-dot').click(function() {
+            if (isAnimating) return; // 이미 애니메이션 중이면 실행 안 함
+
+            const targetIndex = $(this).data('index');
+            if (targetIndex !== currentBanner) {
+                isAnimating = true;
+                $('.banner-slide').eq(currentBanner).fadeOut(300, function() {
+                    currentBanner = targetIndex;
+                    $('.banner-slide').eq(currentBanner).fadeIn(300, function() {
+                        isAnimating = false; // 애니메이션 완료
+                    });
+                    updateDots();
+                });
+            }
+        });
+
+        // 슬라이더 영역에 마우스를 올렸을 때 자동 슬라이드 정지
+        $('.banner-container').hover(
+                function() {
+                    clearInterval(autoSlideInterval);
+                },
+                function() {
+                    startAutoSlide();
+                }
+        );
+
+        // 키보드 이벤트 (접근성)
+        $(document).keydown(function(e) {
+            if (e.keyCode === 37) { // 왼쪽 화살표
+                prevBanner();
+            } else if (e.keyCode === 39) { // 오른쪽 화살표
+                nextBanner();
+            }
+        });
+    });
+</script>
+</html>

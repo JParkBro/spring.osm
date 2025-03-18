@@ -1,0 +1,15 @@
+.product-detail-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    letter-spacing: -.5px;
+    margin-bottom: 100px;
+
+    .product-summary-section {
+        margin-bottom: 20px;
+    }
+
+    .product-detail-tab-section {
+        background-color: #0dcaf0;
+    }
+}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layouts/simpleLayout}"
+      layout:fragment="Content">
+<head>
+    <meta charset="UTF-8">
+    <title>로그인</title>
+
+    <link rel="stylesheet" th:href="@{/css/auth/login.css}">
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <img th:src="@{/images/logo.png}" th:onclick="|window.location.href='/'|" alt="OSM Logo">
+        </div>
+        <form th:action="@{/auth/loginProc}" id="login-form" method="post">
+            <input type="hidden" name="redirect_url" id="redirect_url">
+            <div class="form-group">
+                <label for="userId">아이디</label>
+                <input type="text" id="userId" name="userId" required autofocus>
+            </div>
+            <div class="form-group">
+                <label for="password">비밀번호</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="login-button">로그인</button>
+        </form>
+        <ul class="auth-menu">
+            <li class="auth-menu-item"><a th:href="@{/auth/login}">아이디 찾기</a></li>
+            <li class="auth-menu-item"><a th:href="@{/auth/register}">비밀번호 찾기</a></li>
+            <li class="auth-menu-item"><a th:href="@{/auth/register}">회원가입</a></li>
+        </ul>
+    </div>
+</body>
+<script>
+    $(document).ready(function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const springRedirect = urlParams.get("continue") || urlParams.get("spring-redirect");
+        const redirectParam = urlParams.get("redirect");
+
+        if (springRedirect && springRedirect.includes('/user/')) {
+            console.log("Using Spring Security redirect to protected page");
+            $('#redirect_url').val('');
+        }
+        else if (redirectParam) {
+            console.log("Using explicit redirect parameter");
+            $('#redirect_url').val(redirectParam);
+        }
+        else {
+            console.log("No redirect parameters found");
+            $('#redirect_url').val('');
+        }
+    })
+</script>
+</html>

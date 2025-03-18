@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:layout="http://ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layouts/defaultLayout}"
+      layout:fragment="Content">
+<head>
+	<meta charset="UTF-8">
+	<title>주문 완료</title>
+
+	<style>
+        body {
+            color: #121212;
+        }
+
+        .order-complete-container {
+            width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .complete-message {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .complete-title {
+            font-size: 28px;
+            font-weight: 600;
+	        margin-top: 0;
+            margin-bottom: 15px;
+            color: #000000;
+        }
+
+        .complete-subtitle {
+            font-size: 18px;
+            color: #555555;
+        }
+
+        .order-content-container {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .order-details-section {
+            flex: 7;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-block {
+            padding: 20px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .section-block:last-child {
+            border-bottom: none;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333333;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .info-label {
+            font-size: 14px;
+            color: #555555;
+        }
+
+        .info-value {
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .product-list-container {
+            margin-top: 15px;
+        }
+
+        .product-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .product-item:last-child {
+            border-bottom: none;
+        }
+
+        .product-thumbnail {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-right: 15px;
+        }
+
+        .product-details {
+            flex: 1;
+        }
+
+        .product-name {
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .product-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+
+        .product-quantity {
+            color: #555555;
+        }
+
+        .product-price {
+            font-weight: 500;
+        }
+
+        .delivery-info {
+            margin-top: 12px;
+            padding: 15px;
+            background-color: #f8f8f8;
+            border-radius: 6px;
+        }
+
+        .delivery-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .delivery-item {
+            display: flex;
+            margin-bottom: 5px;
+        }
+
+        .delivery-label {
+            width: 100px;
+            font-size: 14px;
+            color: #555555;
+        }
+
+        .delivery-value {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        /* 주문 요약 섹션 - 스티키 포지션 적용 */
+        .order-summary-section {
+            flex: 3;
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 20px; /* 스크롤 시 상단에서 20px 위치에 고정 */
+            height: fit-content;
+        }
+
+        .summary-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .summary-details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 15px;
+        }
+
+        .summary-row.total {
+            font-weight: 600;
+            font-size: 18px;
+            margin-top: 10px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .summary-value {
+            font-weight: 500;
+        }
+
+        .summary-row.total .summary-value {
+            color: #ff0000;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+
+	        a {
+		        text-decoration-line: none;
+	        }
+        }
+
+        .action-button {
+            flex: 1;
+            padding: 12px 0;
+            text-align: center;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .primary-button {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .primary-button:hover {
+            background-color: #333333;
+        }
+
+        .secondary-button {
+            background-color: #f1f1f1;
+            color: #333333;
+            border: 1px solid #d1d1d1;
+        }
+
+        .secondary-button:hover {
+            background-color: #e1e1e1;
+        }
+
+        .order-status {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f1f7ff;
+            border-radius: 6px;
+        }
+
+        .status-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #0066cc;
+        }
+
+        .status-desc {
+            font-size: 14px;
+            color: #444444;
+            line-height: 1.5;
+        }
+
+        /* 반응형 스타일 */
+        @media (max-width: 1200px) {
+            .order-complete-container {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .order-content-container {
+                flex-direction: column;
+            }
+
+            .order-summary-section {
+                position: static;
+                width: 100%;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+	</style>
+</head>
+<body>
+<div class="order-complete-container">
+	<div class="complete-message">
+		<h1 class="complete-title">주문이 완료되었습니다</h1>
+		<p class="complete-subtitle">주문해 주셔서 감사합니다. 곧 상품을 준비하여 발송해 드리겠습니다.</p>
+	</div>
+
+	<div class="order-content-container">
+		<div class="order-details-section">
+			<!-- 주문 정보 -->
+			<div class="section-block">
+				<h2 class="section-title">주문 정보</h2>
+				<div class="info-grid">
+					<div class="info-item">
+						<div class="info-label">주문번호</div>
+						<div class="info-value" th:text="${order.orderId}">ORDER-202503141234</div>
+					</div>
+					<div class="info-item">
+						<div class="info-label">주문일시</div>
+						<div class="info-value" th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm:ss')}">2025-03-14 12:34:56</div>
+					</div>
+
+					<!-- TODO 결제테이블 추가시 수정 -->
+					<!--<div class="info-item">
+						<div class="info-label">결제방법</div>
+						<div class="info-value" th:text="${order.paymentMethod}">신용카드</div>
+					</div>-->
+				</div>
+
+				<div class="delivery-info">
+					<div class="delivery-title">배송지 정보</div>
+					<div class="delivery-item">
+						<div class="delivery-label">수령인</div>
+						<div class="delivery-value" th:text="${order.recipientName}">홍길동</div>
+					</div>
+					<div class="delivery-item">
+						<div class="delivery-label">연락처</div>
+						<div class="delivery-value" th:text="${order.phone}">010-1234-5678</div>
+					</div>
+					<div class="delivery-item">
+						<div class="delivery-label">주소</div>
+						<div class="delivery-value">
+							<div th:text="${'(' + order.postalCode + ') ' + order.address}">(12345) 서울특별시 강남구 테헤란로 123</div>
+							<div th:text="${order.detailAddress}">456동 789호</div>
+						</div>
+					</div>
+					<div class="delivery-item">
+						<div class="delivery-label">배송요청사항</div>
+						<div class="delivery-value" th:text="${order.deliveryRequest}">문 앞에 놓아주세요</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 주문 상품 내역 -->
+			<div class="section-block">
+				<h2 class="section-title">주문 상품 내역</h2>
+				<div class="product-list-container">
+					<div th:each="item : ${orderItems}" class="product-item">
+						<img th:src="@{${item.thumbnail}}" alt="Product Thumbnail" class="product-thumbnail">
+						<div class="product-details">
+							<div class="product-name" th:text="${item.productName}">상품명</div>
+							<div class="product-meta">
+								<div class="product-quantity" th:text="'수량: ' + ${item.quantity} + '개'">수량: 1개</div>
+								<div class="product-price" th:text="${#numbers.formatInteger(item.price * item.quantity, 0, 'COMMA') + '원'}">0원</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 배송 상태 정보 -->
+			<div class="section-block">
+				<h2 class="section-title">배송 상태</h2>
+				<div class="order-status">
+					<div class="status-title">결제완료</div>
+					<div class="status-desc">
+						주문하신 상품의 결제가 정상적으로 처리되었습니다. 창고에서 상품을 준비 중이며, 곧 발송될 예정입니다.
+						배송이 시작되면 SMS로 배송 알림 및 운송장 번호를 보내드립니다.
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 주문 요약 -->
+		<div class="order-summary-section">
+			<h2 class="summary-title">주문 요약</h2>
+			<div class="summary-details">
+				<div class="summary-row">
+					<div class="summary-label">상품 총액</div>
+					<div class="summary-value" th:text="${#numbers.formatInteger(order.totalProductPrice, 0, 'COMMA') + '원'}">120,000원</div>
+				</div>
+				<div class="summary-row">
+					<div class="summary-label">배송비</div>
+					<div class="summary-value" th:text="${#numbers.formatInteger(order.shippingCost, 0, 'COMMA') + '원'}">2,500원</div>
+				</div>
+				<div class="summary-row total">
+					<div class="summary-label">최종 결제금액</div>
+					<div class="summary-value" th:text="${#numbers.formatInteger(order.totalProductPrice + order.shippingCost, 0, 'COMMA') + '원'}">122,500원</div>
+				</div>
+			</div>
+
+			<div class="action-buttons">
+				<a th:href="@{/user/mypage/orders}" class="action-button secondary-button">주문 내역</a>
+				<a th:href="@{/}" class="action-button primary-button">메인 페이지로</a>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

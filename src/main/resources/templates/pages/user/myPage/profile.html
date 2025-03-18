@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:layout="http://ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layouts/defaultLayout}"
+      layout:fragment="Content">
+<head>
+  <meta charset="UTF-8">
+  <title>회원정보수정</title>
+
+  <style>
+    body {
+      color: #121212;
+      margin: 0;
+      padding: 0;
+    }
+
+    .mypage-container {
+      width: 1200px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      display: flex;
+      gap: 20px;
+    }
+
+    /* 왼쪽 사이드 메뉴 */
+    .mypage-sidebar {
+      width: 245px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-section {
+      background-color: #ffffff;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      padding-bottom: 16px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .sidebar-title {
+      display: block;
+      font-size: 18px;
+      font-weight: 600;
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid #f1f4f6;
+      margin-bottom: 12px;
+      margin-top: 0;
+    }
+
+    .sidebar-menu {
+      padding: 0;
+      margin: 0 12px;
+    }
+
+    .sidebar-menu-item {
+      list-style: none;
+    }
+
+    .sidebar-menu-item a {
+      display: block;
+      line-height: 32px;
+      text-decoration: none;
+      padding: 0 32px 0 8px;
+      transition: color 0.3s ease;
+      color: #121212;
+      border-radius: 4px;
+    }
+
+    .sidebar-menu-item a:hover {
+      background-color: #f4f4f4;
+    }
+
+    .sidebar-menu-item a.active {
+      background-color: #f4f4f4;
+      font-weight: 600;
+    }
+
+    .sidebar-menu-item span {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* 오른쪽 컨텐츠 영역 */
+    .mypage-content {
+      flex: 1;
+      background-color: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .content-title {
+      font-size: 20px;
+      font-weight: 600;
+      padding: 20px;
+      border-bottom: 1px solid #f1f1f1;
+      margin: 0;
+    }
+
+    /* 회원정보 수정 폼 */
+    .profile-form-section {
+      padding: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #555555;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d1d1;
+      border-radius: 6px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    .form-control:focus {
+      border-color: #7a7a7a;
+      outline: none;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+    }
+
+    .address-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .address-controls .form-control {
+      flex: 3;
+    }
+
+    .address-button {
+      flex: 1;
+      background-color: #f1f1f1;
+      border: 1px solid #d1d1d1;
+      border-radius: 6px;
+      padding: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .address-button:hover {
+      background-color: #e1e1e1;
+    }
+
+    .submit-button {
+      background-color: #000000;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 50px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      border: none;
+      width: 100%;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 30px;
+    }
+
+    .submit-button:hover {
+      background-color: #333333;
+    }
+
+    .password-change-section {
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 1px solid #f1f1f1;
+    }
+
+    .section-subtitle {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    /* 반응형 디자인 */
+    @media (max-width: 1200px) {
+      .mypage-container {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .mypage-container {
+        flex-direction: column;
+      }
+
+      .mypage-sidebar {
+        width: 100%;
+      }
+
+      .form-row {
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .address-controls {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="mypage-container">
+  <!-- 왼쪽 사이드 메뉴 -->
+  <div class="mypage-sidebar">
+    <div class="sidebar-section">
+      <h2 class="sidebar-title">마이페이지</h2>
+      <ul class="sidebar-menu">
+        <li class="sidebar-menu-item">
+          <a th:href="@{/user/mypage/orders}">
+            <span>주문내역</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a th:href="@{/user/mypage/profile}" class="active">
+            <span>회원정보수정</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a th:href="@{/user/mypage/reviews}">
+            <span>리뷰관리</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a th:href="@{/logout}">
+            <span>로그아웃</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 오른쪽 컨텐츠 영역 -->
+  <div class="mypage-content">
+    <h1 class="content-title">회원정보수정</h1>
+
+    <div class="profile-form-section">
+      <form id="profile-form">
+        <div class="form-group">
+          <label for="name">이름</label>
+          <input th:value="${user.name}" type="text" id="name" name="name" class="form-control" required readonly>
+        </div>
+
+        <div class="form-group">
+          <label for="email">이메일</label>
+          <input th:value="${user.email}" type="email" id="email" name="email" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label for="mobile-phone">연락처</label>
+          <input th:value="${user.mobilePhone}" type="tel" id="mobile-phone" name="phone" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label for="postal-code">우편번호</label>
+          <div class="address-controls">
+            <input th:value="${user.postalCode}" type="text" id="postal-code" name="postal-code" class="form-control" readonly required>
+            <button type="button" class="address-button" onclick="searchAddress()">주소 찾기</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="address">주소</label>
+          <input th:value="${user.address}" type="text" id="address" name="address" class="form-control" readonly required>
+        </div>
+
+        <div class="form-group">
+          <label for="detail-address">상세주소</label>
+          <input th:value="${user.detailAddress}" type="text" id="detail-address" name="detail-address" class="form-control" required>
+        </div>
+
+        <div class="password-change-section">
+          <h3 class="section-subtitle">비밀번호 변경</h3>
+
+          <div class="form-group">
+            <label for="current-password">현재 비밀번호</label>
+            <input type="password" id="current-password" name="current-password" class="form-control">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="new-password">새 비밀번호</label>
+              <input type="password" id="new-password" name="new-password" class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label for="confirm-password">새 비밀번호 확인</label>
+              <input type="password" id="confirm-password" name="confirm-password" class="form-control">
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-button">정보 수정하기</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function() {
+    // 연락처 입력 형식 처리
+    $('#mobile-phone').on('input', function() {
+      let value = $(this).val().replace(/[^0-9]/g, '');
+
+      if (value.length > 3 && value.length <= 7) {
+        value = value.replace(/(\d{3})(\d+)/, '$1-$2');
+      } else if (value.length > 7) {
+        value = value.replace(/(\d{3})(\d{4})(\d+)/, '$1-$2-$3');
+      }
+      if (value.length > 13) {
+        value = value.substring(0, 13);
+      }
+      $(this).val(value);
+    });
+
+    // 주소 검색 기능
+    window.searchAddress = function() {
+      alert('주소 검색 기능은 카카오 우편번호 서비스 등을 연동해야 합니다.');
+    };
+
+    // 폼 제출 처리
+    $('#profile-form').on('submit', function(e) {
+      e.preventDefault();
+
+      const newPassword = $('#new-password').val();
+      const confirmPassword = $('#confirm-password').val();
+
+      if (newPassword || confirmPassword) {
+        if (!$('#current-password').val()) {
+          alert('현재 비밀번호를 입력해주세요.');
+          return;
+        }
+
+        if (newPassword !== confirmPassword) {
+          alert('새 비밀번호와 확인 비밀번호가 일치하지 않습니다.');
+          return;
+        }
+      }
+
+      // 프로필 정보 수집
+      const profileData = {
+        name: $('#name').val(),
+        email: $('#email').val(),
+        mobilePhone: $('#mobile-phone').val(),
+        postalCode: $('#postal-code').val(),
+        address: $('#address').val(),
+        detailAddress: $('#detail-address').val(),
+        currentPassword: $('#current-password').val(),
+        newPassword: newPassword
+      };
+
+      // AJAX 요청 - 서버로 데이터 전송
+      $.ajax({
+        url: '/api/v1/profile/update',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(profileData),
+        success: function(response) {
+          if (response && response.success) {
+            alert(response.message);
+
+            $('#current-password').val('');
+            $('#new-password').val('');
+            $('#confirm-password').val('');
+          } else {
+            alert(response.message || '회원정보 업데이트 중 오류가 발생했습니다.');
+          }
+        },
+        error: function(xhr, status, error) {
+          console.error('회원정보 업데이트 중 오류 발생:', xhr);
+          try {
+            const response = JSON.parse(xhr.responseText);
+            if (response && response.error) {
+              alert(response.error);
+            } else {
+              alert('회원정보 업데이트 중 오류가 발생했습니다.');
+            }
+          } catch (e) {
+            alert('회원정보 업데이트 중 오류가 발생했습니다.');
+          }
+        }
+      });
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.onlineshoppingmall.mapper.CodeMapper">
+
+    <!-- 모든 활성화된 코드 조회 -->
+    <select id="selectAllActiveCodes" resultType="com.example.onlineshoppingmall.domain.Code">
+        SELECT
+            id, code_type, code_key, code_value, description,
+            created_user, created_at, updated_user, updated_at, use_yn
+        FROM CODES
+        WHERE use_yn = 'Y'
+    </select>
+
+    <!-- ID로 코드 조회 -->
+    <select id="selectCodeById" parameterType="Long" resultType="com.example.onlineshoppingmall.domain.Code">
+        SELECT
+            id, code_type, code_key, code_value, description,
+            created_user, created_at, updated_user, updated_at, use_yn
+        FROM CODES
+        WHERE id = #{id}
+          AND use_yn = 'Y'
+    </select>
+
+    <!-- 코드 타입과 키로 코드 조회 -->
+    <select id="selectCodeByTypeAndKey" resultType="com.example.onlineshoppingmall.domain.Code">
+        SELECT
+            id, code_type, code_key, code_value, description,
+            created_user, created_at, updated_user, updated_at, use_yn
+        FROM CODES
+        WHERE code_type = #{codeType}
+          AND code_key = #{codeKey}
+          AND use_yn = 'Y'
+    </select>
+
+    <!-- 특정 타입의 모든 코드 조회 -->
+    <select id="selectCodesByType" parameterType="String" resultType="com.example.onlineshoppingmall.domain.Code">
+        SELECT
+            id, code_type, code_key, code_value, description,
+            created_user, created_at, updated_user, updated_at, use_yn
+        FROM CODES
+        WHERE code_type = #{codeType}
+          AND use_yn = 'Y'
+    </select>
+
+</mapper>

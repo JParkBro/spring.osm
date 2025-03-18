@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layouts/defaultLayout}"
+      layout:fragment="Content">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" th:href="@{/css/product/detail/productDetail.css}">
+</head>
+<body>
+    <div class="product-detail-container">
+        <section class="product-summary-section">
+            <div th:replace="~{pages/product/detail/fragments/productSummary :: productSummaryFragment}"></div>
+        </section>
+        <section class="product-detail-tab-section">
+            <div th:replace="~{pages/product/detail/fragments/productDetailTab :: productDetailTabFragment}"></div>
+        </section>
+    </div>
+</body>
+</html>
